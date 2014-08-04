@@ -1,0 +1,28 @@
+{
+  "name": "aseed-model",
+  "version": "0.0.1",
+  "homepage": "https://github.com/adrenalin/aseed-model",
+  "authors": [
+    "Arttu Manninen <arttu@kaktus.cc>"
+  ],
+  "description": "Model baseclass for my aseed project",
+  "main": "model.js",
+  "moduleType": [
+    "amd"
+  ],
+  "keywords": [
+    "angularjs",
+    "aseed"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "aseed": "adrenalin/aseed"
+  }
+}
