@@ -43,7 +43,7 @@
           _ref1 = this._fields;
           for (k in _ref1) {
             v = _ref1[k];
-            if (this[k] instanceof Basemodel && typeof this[k].getFormData === 'function') {
+            if (this[k] instanceof Model && typeof this[k].getFormData === 'function') {
               formData[k] = this[k].getFormData();
             } else if (this[k] instanceof Array) {
               formData[k] = [];
