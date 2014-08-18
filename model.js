@@ -157,7 +157,11 @@
                       if (typeof window[className] !== 'undefined') {
                         obj = new window[className];
                       } else if (typeof this._namespace[className] !== 'undefined') {
-                        obj = new this._namespace[className](value);
+                        if (value instanceof this._namespace[className]) {
+                          obj = value;
+                        } else {
+                          obj = new this._namespace[className](value);
+                        }
                       }
                       _results1.push(this[k].push(obj));
                     }
@@ -170,7 +174,11 @@
               case 'Object':
                 className = key[1];
                 value = values[k];
-                _results.push(this[k] = new this._namespace[className](value));
+                if (value instanceof this._namespace[className]) {
+                  _results.push(this[k] = value);
+                } else {
+                  _results.push(this[k] = new this._namespace[className](value));
+                }
                 break;
               default:
                 _results.push(this[k] = this.typecast(values[k], key[0]));

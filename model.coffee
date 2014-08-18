@@ -131,14 +131,23 @@ define [], () ->
                   if typeof window[className] isnt 'undefined'
                     obj = new window[className]
                   else if typeof @_namespace[className] isnt 'undefined'
-                    obj = new @_namespace[className](value)
+                    # Check if the value is already the correct object type
+                    if value instanceof @_namespace[className]
+                      obj = value
+                    else
+                      obj = new @_namespace[className](value)
                   @[k].push obj
               else
                 @[k] = @typecast values[k], key[1]
             when 'Object'
               className = key[1]
               value = values[k]
-              @[k] = new @_namespace[className](value)
+              
+              # Check if the value is already the correct object type
+              if value instanceof @_namespace[className]
+                @[k] = value
+              else
+                @[k] = new @_namespace[className](value)
             else
               @[k] = @typecast values[k], key[0]
       catch error
