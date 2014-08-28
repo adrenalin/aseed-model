@@ -29,7 +29,7 @@ define [], () ->
         formData = {}
         
         for k, v of @_fields
-          if @[k] instanceof Model and typeof @[k].getFormData is 'function'
+          if @[k] instanceof Basemodel and typeof @[k].getFormData is 'function'
             formData[k] = @[k].getFormData()
           else if @[k] instanceof Array
             formData[k] = []
@@ -123,31 +123,37 @@ define [], () ->
             when 'Array'
               @[k] = []
               if key[1] is 'Object'
-                className = key[2]
+                if typeof key[2] isnt 'undefined'
+                  className = key[2]
+                else
+                  className = null
                 
                 for i in [0...values[k].length]
                   value = values[k][i]
                   
-                  if typeof window[className] isnt 'undefined'
+                  if !className
+                    obj = value
+                  else if typeof window[className] isnt 'undefined'
                     obj = new window[className]
                   else if typeof @_namespace[className] isnt 'undefined'
-                    # Check if the value is already the correct object type
-                    if value instanceof @_namespace[className]
-                      obj = value
-                    else
-                      obj = new @_namespace[className](value)
+                    obj = new @_namespace[className](value)
                   @[k].push obj
               else
                 @[k] = @typecast values[k], key[1]
             when 'Object'
-              className = key[1]
-              value = values[k]
-              
-              # Check if the value is already the correct object type
-              if value instanceof @_namespace[className]
-                @[k] = value
+              if typeof key[1] isnt 'undefined'
+                className = key[1]
               else
-                @[k] = new @_namespace[className](value)
+                className = null
+              
+              value = values[k]
+              if !className
+                obj = value
+              else if typeof window[className] isnt 'undefined'
+                obj = new window[className]
+              else if typeof @_namespace[className] isnt 'undefined'
+                obj = new @_namespace[className](value)
+              @[k] = obj
             else
               @[k] = @typecast values[k], key[0]
       catch error

@@ -43,7 +43,7 @@
           _ref1 = this._fields;
           for (k in _ref1) {
             v = _ref1[k];
-            if (this[k] instanceof Model && typeof this[k].getFormData === 'function') {
+            if (this[k] instanceof Basemodel && typeof this[k].getFormData === 'function') {
               formData[k] = this[k].getFormData();
             } else if (this[k] instanceof Array) {
               formData[k] = [];
@@ -148,20 +148,22 @@
               case 'Array':
                 this[k] = [];
                 if (key[1] === 'Object') {
-                  className = key[2];
+                  if (typeof key[2] !== 'undefined') {
+                    className = key[2];
+                  } else {
+                    className = null;
+                  }
                   _results.push((function() {
                     var _i, _ref1, _results1;
                     _results1 = [];
                     for (i = _i = 0, _ref1 = values[k].length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; i = 0 <= _ref1 ? ++_i : --_i) {
                       value = values[k][i];
-                      if (typeof window[className] !== 'undefined') {
+                      if (!className) {
+                        obj = value;
+                      } else if (typeof window[className] !== 'undefined') {
                         obj = new window[className];
                       } else if (typeof this._namespace[className] !== 'undefined') {
-                        if (value instanceof this._namespace[className]) {
-                          obj = value;
-                        } else {
-                          obj = new this._namespace[className](value);
-                        }
+                        obj = new this._namespace[className](value);
                       }
                       _results1.push(this[k].push(obj));
                     }
@@ -172,13 +174,20 @@
                 }
                 break;
               case 'Object':
-                className = key[1];
-                value = values[k];
-                if (value instanceof this._namespace[className]) {
-                  _results.push(this[k] = value);
+                if (typeof key[1] !== 'undefined') {
+                  className = key[1];
                 } else {
-                  _results.push(this[k] = new this._namespace[className](value));
+                  className = null;
                 }
+                value = values[k];
+                if (!className) {
+                  obj = value;
+                } else if (typeof window[className] !== 'undefined') {
+                  obj = new window[className];
+                } else if (typeof this._namespace[className] !== 'undefined') {
+                  obj = new this._namespace[className](value);
+                }
+                _results.push(this[k] = obj);
                 break;
               default:
                 _results.push(this[k] = this.typecast(values[k], key[0]));
