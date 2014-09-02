@@ -54,6 +54,12 @@
                   formData[k].push(this[k][i]);
                 }
               }
+            } else if (k.type === 'Boolean') {
+              if (this[k]) {
+                formData[k] = 1;
+              } else {
+                formData[k] = 0;
+              }
             } else {
               formData[k] = this[k];
             }

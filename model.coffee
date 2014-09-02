@@ -39,6 +39,11 @@ define [], () ->
                 formData[k].push @[k][i].getFormData()
               else
                 formData[k].push @[k][i]
+          else if k.type is 'Boolean'
+            if @[k]
+              formData[k] = 1
+            else
+              formData[k] = 0
           else
             formData[k] = @[k]
         
