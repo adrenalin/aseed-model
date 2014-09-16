@@ -15,13 +15,8 @@ define [], () ->
       
       Angular = window.angular
       
-      for k, v of @_fields
-        if !Angular.isObject(v)
-          @_fields[k] = Angular.extend({}, defaults)
-          @_fields[k].type = v
-        else
-          @_fields[k] = Angular.extend({}, defaults, v)
-        
+      @_fields = @getFields()
+      
       unless opts then opts = {}
       @setValues(opts)
       
@@ -48,6 +43,15 @@ define [], () ->
             formData[k] = @[k]
         
         return formData
+    
+    # Get fields
+    getFields: () ->
+      for k, v of @_fields
+        if !Angular.isObject(v)
+          @_fields[k] = Angular.extend({}, defaults)
+          @_fields[k].type = v
+        else
+          @_fields[k] = Angular.extend({}, defaults, v)
     
     # Get field type
     getType: (field) ->

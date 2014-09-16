@@ -13,7 +13,7 @@
       Model.prototype._namespace = {};
 
       function Model(opts) {
-        var Angular, defaults, k, v, _ref;
+        var Angular, defaults;
         if (opts == null) {
           opts = null;
         }
@@ -23,31 +23,22 @@
           "default": null
         };
         Angular = window.angular;
-        _ref = this._fields;
-        for (k in _ref) {
-          v = _ref[k];
-          if (!Angular.isObject(v)) {
-            this._fields[k] = Angular.extend({}, defaults);
-            this._fields[k].type = v;
-          } else {
-            this._fields[k] = Angular.extend({}, defaults, v);
-          }
-        }
+        this._fields = this.getFields();
         if (!opts) {
           opts = {};
         }
         this.setValues(opts);
         this.getFormData = function() {
-          var formData, i, _i, _ref1, _ref2;
+          var formData, i, k, v, _i, _ref, _ref1;
           formData = {};
-          _ref1 = this._fields;
-          for (k in _ref1) {
-            v = _ref1[k];
+          _ref = this._fields;
+          for (k in _ref) {
+            v = _ref[k];
             if (this[k] instanceof Basemodel && typeof this[k].getFormData === 'function') {
               formData[k] = this[k].getFormData();
             } else if (this[k] instanceof Array) {
               formData[k] = [];
-              for (i = _i = 0, _ref2 = this[k].length; 0 <= _ref2 ? _i < _ref2 : _i > _ref2; i = 0 <= _ref2 ? ++_i : --_i) {
+              for (i = _i = 0, _ref1 = this[k].length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; i = 0 <= _ref1 ? ++_i : --_i) {
                 if (typeof this[k][i].getFormData === 'function') {
                   formData[k].push(this[k][i].getFormData());
                 } else {
@@ -67,6 +58,22 @@
           return formData;
         };
       }
+
+      Model.prototype.getFields = function() {
+        var k, v, _ref, _results;
+        _ref = this._fields;
+        _results = [];
+        for (k in _ref) {
+          v = _ref[k];
+          if (!Angular.isObject(v)) {
+            this._fields[k] = Angular.extend({}, defaults);
+            _results.push(this._fields[k].type = v);
+          } else {
+            _results.push(this._fields[k] = Angular.extend({}, defaults, v));
+          }
+        }
+        return _results;
+      };
 
       Model.prototype.getType = function(field) {
         var type;
