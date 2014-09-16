@@ -17,7 +17,7 @@ define [], () ->
         formData = {}
         
         for k, v of @_fields
-          if @[k] instanceof Basemodel and typeof @[k].getFormData is 'function'
+          if @[k] instanceof Model and typeof @[k].getFormData is 'function'
             formData[k] = @[k].getFormData()
           else if @[k] instanceof Array
             formData[k] = []
