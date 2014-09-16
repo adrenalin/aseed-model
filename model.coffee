@@ -40,9 +40,11 @@ define [], () ->
     # Get fields
     getFields: () ->
       Angular = window.angular
-      fields = @_fields?
       
-      unless fields then fields = {}
+      if typeof @_fields is 'undefined' or !Angular.isObject(@_fields)
+        fields = {}
+      else
+        fields = @_fields
       
       defaults =
         type: null

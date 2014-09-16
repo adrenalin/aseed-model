@@ -55,9 +55,10 @@
       Model.prototype.getFields = function() {
         var Angular, defaults, fields, k, v;
         Angular = window.angular;
-        fields = this._fields != null;
-        if (!fields) {
+        if (typeof this._fields === 'undefined' || !Angular.isObject(this._fields)) {
           fields = {};
+        } else {
+          fields = this._fields;
         }
         defaults = {
           type: null,
