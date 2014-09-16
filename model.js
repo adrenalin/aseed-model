@@ -13,16 +13,9 @@
       Model.prototype._namespace = {};
 
       function Model(opts) {
-        var Angular, defaults;
         if (opts == null) {
           opts = null;
         }
-        defaults = {
-          type: null,
-          nullable: true,
-          "default": null
-        };
-        Angular = window.angular;
         this._fields = this.getFields();
         if (!opts) {
           opts = {};
@@ -60,19 +53,27 @@
       }
 
       Model.prototype.getFields = function() {
-        var k, v, _ref, _results;
-        _ref = this._fields;
-        _results = [];
-        for (k in _ref) {
-          v = _ref[k];
+        var Angular, defaults, fields, k, v;
+        Angular = window.angular;
+        fields = this._fields != null;
+        if (!fields) {
+          fields = {};
+        }
+        defaults = {
+          type: null,
+          nullable: true,
+          "default": null
+        };
+        for (k in fields) {
+          v = fields[k];
           if (!Angular.isObject(v)) {
-            this._fields[k] = Angular.extend({}, defaults);
-            _results.push(this._fields[k].type = v);
+            fields[k] = Angular.extend({}, defaults);
+            fields[k].type = v;
           } else {
-            _results.push(this._fields[k] = Angular.extend({}, defaults, v));
+            fields[k] = Angular.extend({}, defaults, v);
           }
         }
-        return _results;
+        return fields;
       };
 
       Model.prototype.getType = function(field) {

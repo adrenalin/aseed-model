@@ -8,13 +8,6 @@ define [], () ->
     _namespace: {}
     
     constructor: (opts = null) ->
-      defaults =
-        type: null
-        nullable: true
-        default: null
-      
-      Angular = window.angular
-      
       @_fields = @getFields()
       
       unless opts then opts = {}
@@ -46,12 +39,24 @@ define [], () ->
     
     # Get fields
     getFields: () ->
-      for k, v of @_fields
+      Angular = window.angular
+      fields = @_fields?
+      
+      unless fields then fields = {}
+      
+      defaults =
+        type: null
+        nullable: true
+        default: null
+      
+      for k, v of fields
         if !Angular.isObject(v)
-          @_fields[k] = Angular.extend({}, defaults)
-          @_fields[k].type = v
+          fields[k] = Angular.extend({}, defaults)
+          fields[k].type = v
         else
-          @_fields[k] = Angular.extend({}, defaults, v)
+          fields[k] = Angular.extend({}, defaults, v)
+      
+      return fields
     
     # Get field type
     getType: (field) ->
