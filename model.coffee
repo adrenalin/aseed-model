@@ -5,14 +5,36 @@ define [], () ->
         type: 'Number'
         value: 0
     
+    ###
+    Namespace that maps field type name into an object
+    
+    Usage:
+      _namespace:
+        "Person": Person
+    
+    where the type defined in _fields corresponds namespace key and class
+    (with adjacent constructor) is its value.
+    ###
     _namespace: {}
     
+    ###
+    Constructor accepts object data as the only constructor argument. Object
+    keys should correspond to the keys defined in Model._fields or they will
+    be automatically skipped. Values will be typecasted whenever possible.
+    
+    Usage:
+    
+    new Model({id: 1, name: "foobar", title: "Foobar"})
+    ###
     constructor: (opts = null) ->
       @_fields = @getFields()
       
       unless opts then opts = {}
+      
+      # Set values given as a constructor argument
       @setValues(opts)
       
+      # Get form data for form submissions
       @getFormData = ->
         formData = {}
         
@@ -34,6 +56,10 @@ define [], () ->
               formData[k] = 0
           else
             formData[k] = @[k]
+        
+        # Allow model based post process hooks
+        if typeof @getFormDataPostProcess isnt 'undefined'
+          @getFormDataPostProcess(formData)
         
         return formData
     
@@ -75,6 +101,7 @@ define [], () ->
         when type.match(/^object:/i) then return type.replace(/object:/i, '')
         else return type
     
+    # Typecast values
     typecast: (value, type) ->
       # Typecasting
       switch type
@@ -86,6 +113,7 @@ define [], () ->
           value = !!(value)
       return value
     
+    # Set values of the object as an object
     setValues: (values = null) ->
       try
         for k, v of @_fields
@@ -174,6 +202,3 @@ define [], () ->
               @[k] = @typecast values[k], key[0]
       catch error
         console.error error.toString()
-    
-    getNavigation: ->
-      return []

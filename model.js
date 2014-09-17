@@ -10,7 +10,30 @@
         }
       };
 
+
+      /*
+      Namespace that maps field type name into an object
+      
+      Usage:
+        _namespace:
+          "Person": Person
+      
+      where the type defined in _fields corresponds namespace key and class
+      (with adjacent constructor) is its value.
+       */
+
       Model.prototype._namespace = {};
+
+
+      /*
+      Constructor accepts object data as the only constructor argument. Object
+      keys should correspond to the keys defined in Model._fields or they will
+      be automatically skipped. Values will be typecasted whenever possible.
+      
+      Usage:
+      
+      new Model({id: 1, name: "foobar", title: "Foobar"})
+       */
 
       function Model(opts) {
         if (opts == null) {
@@ -47,6 +70,9 @@
             } else {
               formData[k] = this[k];
             }
+          }
+          if (typeof this.getFormDataPostProcess !== 'undefined') {
+            this.getFormDataPostProcess(formData);
           }
           return formData;
         };
@@ -213,10 +239,6 @@
           error = _error;
           return console.error(error.toString());
         }
-      };
-
-      Model.prototype.getNavigation = function() {
-        return [];
       };
 
       return Model;
