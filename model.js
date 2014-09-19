@@ -143,13 +143,12 @@
       };
 
       Model.prototype.setValues = function(values) {
-        var camelCase, capitalized, className, def, error, i, k, key, obj, setter, t0, t1, type, v, value, _ref, _results;
+        var camelCase, capitalized, className, def, error, i, k, key, obj, setter, t0, t1, type, v, value, _i, _ref, _ref1;
         if (values == null) {
           values = null;
         }
         try {
           _ref = this._fields;
-          _results = [];
           for (k in _ref) {
             v = _ref[k];
             if (v === null) {
@@ -204,24 +203,19 @@
                   } else {
                     className = null;
                   }
-                  _results.push((function() {
-                    var _i, _ref1, _results1;
-                    _results1 = [];
-                    for (i = _i = 0, _ref1 = values[k].length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; i = 0 <= _ref1 ? ++_i : --_i) {
-                      value = values[k][i];
-                      if (!className) {
-                        obj = value;
-                      } else if (typeof window[className] !== 'undefined') {
-                        obj = new window[className];
-                      } else if (typeof this._namespace[className] !== 'undefined') {
-                        obj = new this._namespace[className](value);
-                      }
-                      _results1.push(this[k].push(obj));
+                  for (i = _i = 0, _ref1 = values[k].length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; i = 0 <= _ref1 ? ++_i : --_i) {
+                    value = values[k][i];
+                    if (!className) {
+                      obj = value;
+                    } else if (typeof window[className] !== 'undefined') {
+                      obj = new window[className];
+                    } else if (typeof this._namespace[className] !== 'undefined') {
+                      obj = new this._namespace[className](value);
                     }
-                    return _results1;
-                  }).call(this));
+                    this[k].push(obj);
+                  }
                 } else {
-                  _results.push(this[k] = this.typecast(values[k], key[1]));
+                  this[k] = this.typecast(values[k], key[1]);
                 }
                 break;
               case 'Object':
@@ -238,13 +232,15 @@
                 } else if (typeof this._namespace[className] !== 'undefined') {
                   obj = new this._namespace[className](value);
                 }
-                _results.push(this[k] = obj);
+                this[k] = obj;
                 break;
               default:
-                _results.push(this[k] = this.typecast(values[k], key[0]));
+                this[k] = this.typecast(values[k], key[0]);
             }
           }
-          return _results;
+          if (typeof this.setValuesPostProcess === 'function') {
+            return this.setValuesPostProcess();
+          }
         } catch (_error) {
           error = _error;
           return console.error(error.toString());

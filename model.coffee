@@ -212,5 +212,6 @@ define [], () ->
               @[k] = obj
             else
               @[k] = @typecast values[k], key[0]
+        if typeof @setValuesPostProcess is 'function' then @setValuesPostProcess()
       catch error
         console.error error.toString()
