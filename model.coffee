@@ -163,6 +163,18 @@ define [], () ->
               t1
             ]
           
+          capitalized = k.toString().substring(0, 1).toUpperCase() + k.toString().substring(1)
+          setter = "set#{k}"
+          camelCase = 'set' + capitalized
+          
+          # Use setter if applicable
+          if typeof @[camelCase] is 'function' and camelCase isnt 'setValues'
+            @[camelCase](values[k])
+            continue
+          else if typeof @[setter] is 'function'
+            @[setter](values[k])
+            continue
+          
           switch key[0]
             when 'Array'
               @[k] = []

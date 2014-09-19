@@ -143,7 +143,7 @@
       };
 
       Model.prototype.setValues = function(values) {
-        var className, def, error, i, k, key, obj, t0, t1, type, v, value, _ref, _results;
+        var camelCase, capitalized, className, def, error, i, k, key, obj, setter, t0, t1, type, v, value, _ref, _results;
         if (values == null) {
           values = null;
         }
@@ -184,6 +184,16 @@
             }
             if (t0 === 'Array' && typeof this._namespace[t1] !== 'undefined') {
               key = ['Array', 'Object', t1];
+            }
+            capitalized = k.toString().substring(0, 1).toUpperCase() + k.toString().substring(1);
+            setter = "set" + k;
+            camelCase = 'set' + capitalized;
+            if (typeof this[camelCase] === 'function' && camelCase !== 'setValues') {
+              this[camelCase](values[k]);
+              continue;
+            } else if (typeof this[setter] === 'function') {
+              this[setter](values[k]);
+              continue;
             }
             switch (key[0]) {
               case 'Array':
