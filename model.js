@@ -238,8 +238,8 @@
                 this[k] = this.typecast(values[k], key[0]);
             }
           }
-          if (typeof this.setValuesPostProcess === 'function') {
-            return this.setValuesPostProcess();
+          if (typeof this.updateValues === 'function') {
+            return this.updateValues();
           }
         } catch (_error) {
           error = _error;
