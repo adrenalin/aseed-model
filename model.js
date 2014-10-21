@@ -50,7 +50,7 @@
           _ref = this._fields;
           for (k in _ref) {
             v = _ref[k];
-            if (!this._fields.formData) {
+            if (!v.formData) {
               continue;
             }
             if (this[k] instanceof Model && typeof this[k].getFormData === 'function') {

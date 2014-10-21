@@ -39,7 +39,7 @@ define [], () ->
         formData = {}
         
         for k, v of @_fields
-          unless @_fields.formData then continue
+          unless v.formData then continue
           
           if @[k] instanceof Model and typeof @[k].getFormData is 'function'
             formData[k] = @[k].getFormData()
