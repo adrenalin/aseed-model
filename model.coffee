@@ -39,6 +39,8 @@ define [], () ->
         formData = {}
         
         for k, v of @_fields
+          unless @_fields.formData then continue
+          
           if @[k] instanceof Model and typeof @[k].getFormData is 'function'
             formData[k] = @[k].getFormData()
           else if @[k] instanceof Array
@@ -76,6 +78,7 @@ define [], () ->
         type: null
         nullable: true
         default: null
+        formData: true
       
       for k, v of fields
         if !Angular.isObject(v)
