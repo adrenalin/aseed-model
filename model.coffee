@@ -70,7 +70,6 @@ define [], () ->
         
         for k, v of @_fields
           value = @[k]
-          console.log k, value, v
           
           if value and typeof value.validateForm is 'function'
             errors.concat(value.validateForm())

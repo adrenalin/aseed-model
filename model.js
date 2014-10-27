@@ -86,7 +86,6 @@
           for (k in _ref) {
             v = _ref[k];
             value = this[k];
-            console.log(k, value, v);
             if (value && typeof value.validateForm === 'function') {
               errors.concat(value.validateForm());
               continue;
