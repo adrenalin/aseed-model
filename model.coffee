@@ -64,6 +64,35 @@ define [], () ->
           @getFormDataPostProcess(formData)
         
         return formData
+      
+      @validateData = ->
+        errors = []
+        
+        for k, v of @_fields
+          value = @[k]
+          console.log k, value, v
+          
+          if value and typeof value.validateForm is 'function'
+            errors.concat(value.validateForm())
+            continue
+          
+          if v.required and !value
+            errors.push {
+              object: @
+              key: k
+              value: value
+              error: 'required'
+            }
+            continue
+          
+          if v.validation and value and !value.match(v.validation)
+            errors.push {
+              object: @
+              key: k
+              value: value
+              error: 'validation failed'
+            }
+        return errors
     
     # Get fields
     getFields: () ->
@@ -79,6 +108,8 @@ define [], () ->
         nullable: true
         default: null
         formData: true
+        required: false
+        validation: null
       
       for k, v of fields
         if !Angular.isObject(v)

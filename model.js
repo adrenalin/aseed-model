@@ -79,6 +79,38 @@
           }
           return formData;
         };
+        this.validateData = function() {
+          var errors, k, v, value, _ref;
+          errors = [];
+          _ref = this._fields;
+          for (k in _ref) {
+            v = _ref[k];
+            value = this[k];
+            console.log(k, value, v);
+            if (value && typeof value.validateForm === 'function') {
+              errors.concat(value.validateForm());
+              continue;
+            }
+            if (v.required && !value) {
+              errors.push({
+                object: this,
+                key: k,
+                value: value,
+                error: 'required'
+              });
+              continue;
+            }
+            if (v.validation && value && !value.match(v.validation)) {
+              errors.push({
+                object: this,
+                key: k,
+                value: value,
+                error: 'validation failed'
+              });
+            }
+          }
+          return errors;
+        };
       }
 
       Model.prototype.getFields = function() {
@@ -93,7 +125,9 @@
           type: null,
           nullable: true,
           "default": null,
-          formData: true
+          formData: true,
+          required: false,
+          validation: null
         };
         for (k in fields) {
           v = fields[k];
