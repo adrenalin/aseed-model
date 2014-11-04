@@ -45,12 +45,17 @@
         }
         this.setValues(opts);
         this.getFormData = function() {
-          var formData, i, k, v, _i, _ref, _ref1;
+          var fn, formData, i, k, v, _i, _ref, _ref1;
           formData = {};
           _ref = this._fields;
           for (k in _ref) {
             v = _ref[k];
             if (!v.formData) {
+              continue;
+            }
+            fn = "get" + k.substr(0, 1).toUpperCase() + k.substr(1) + "Value";
+            if (typeof this[fn] === 'function') {
+              formData[k] = this[fn]();
               continue;
             }
             if (this[k] instanceof Model && typeof this[k].getFormData === 'function') {

@@ -41,6 +41,12 @@ define [], () ->
         for k, v of @_fields
           unless v.formData then continue
           
+          # Custom override function
+          fn = "get" + k.substr(0, 1).toUpperCase() + k.substr(1) + "Value"
+          if typeof @[fn] is 'function'
+            formData[k] = @[fn]()
+            continue
+          
           if @[k] instanceof Model and typeof @[k].getFormData is 'function'
             formData[k] = @[k].getFormData()
           else if @[k] instanceof Array
