@@ -54,7 +54,7 @@
               continue;
             }
             fn = "get" + k.substr(0, 1).toUpperCase() + k.substr(1) + "Value";
-            if (typeof this[fn] === 'function') {
+            if (typeof this[fn] === 'function' || typeof this.__proto__[fn] === 'function') {
               formData[k] = this[fn]();
               continue;
             }

@@ -43,7 +43,7 @@ define [], () ->
           
           # Custom override function
           fn = "get" + k.substr(0, 1).toUpperCase() + k.substr(1) + "Value"
-          if typeof @[fn] is 'function'
+          if typeof @[fn] is 'function' or typeof @__proto__[fn] is 'function'
             formData[k] = @[fn]()
             continue
           
@@ -53,7 +53,7 @@ define [], () ->
             formData[k] = []
             
             for i in [0...@[k].length]
-              if typeof @[k][i].getFormData is 'function'
+              if typeof @[k][i].getFormData is 'function' or typeof @[k][i].__proto__.getFormData is 'function'
                 formData[k].push @[k][i].getFormData()
               else
                 formData[k].push @[k][i]
@@ -77,7 +77,7 @@ define [], () ->
         for k, v of @_fields
           value = @[k]
           
-          if value and typeof value.validateForm is 'function'
+          if value and (typeof value.validateForm is 'function' or typeof typeof value.__proto__.validateForm is 'function')
             errors.concat(value.validateForm())
             continue
           
@@ -207,10 +207,10 @@ define [], () ->
           camelCase = 'set' + capitalized
           
           # Use setter if applicable
-          if typeof @[camelCase] is 'function' and camelCase isnt 'setValues'
+          if (typeof @[camelCase] is 'function' or typeof @__proto__[camelCase] is 'function') and camelCase isnt 'setValues'
             @[camelCase](values[k])
             continue
-          else if typeof @[setter] is 'function'
+          else if typeof @[setter] is 'function' or typeof @__proto__[setter] is 'function'
             @[setter](values[k])
             continue
           
@@ -251,6 +251,7 @@ define [], () ->
               @[k] = obj
             else
               @[k] = @typecast values[k], key[0]
-        if typeof @updateValues is 'function' then @updateValues()
+        if typeof @updateValues is 'function' or typeof @__proto__.updateValues is 'function'
+          @updateValues()
       catch error
         console.error error.toString()
