@@ -63,7 +63,7 @@
             } else if (this[k] instanceof Array) {
               formData[k] = [];
               for (i = _i = 0, _ref1 = this[k].length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; i = 0 <= _ref1 ? ++_i : --_i) {
-                if (typeof this[k][i].getFormData === 'function') {
+                if (typeof this[k][i].getFormData === 'function' || typeof this[k][i].__proto__.getFormData === 'function') {
                   formData[k].push(this[k][i].getFormData());
                 } else {
                   formData[k].push(this[k][i]);
@@ -91,7 +91,7 @@
           for (k in _ref) {
             v = _ref[k];
             value = this[k];
-            if (value && typeof value.validateForm === 'function') {
+            if (value && (typeof value.validateForm === 'function' || typeof typeof value.__proto__.validateForm === 'function')) {
               errors.concat(value.validateForm());
               continue;
             }
@@ -229,10 +229,10 @@
             capitalized = k.toString().substring(0, 1).toUpperCase() + k.toString().substring(1);
             setter = "set" + k;
             camelCase = 'set' + capitalized;
-            if (typeof this[camelCase] === 'function' && camelCase !== 'setValues') {
+            if ((typeof this[camelCase] === 'function' || typeof this.__proto__[camelCase] === 'function') && camelCase !== 'setValues') {
               this[camelCase](values[k]);
               continue;
-            } else if (typeof this[setter] === 'function') {
+            } else if (typeof this[setter] === 'function' || typeof this.__proto__[setter] === 'function') {
               this[setter](values[k]);
               continue;
             }
@@ -280,7 +280,7 @@
                 this[k] = this.typecast(values[k], key[0]);
             }
           }
-          if (typeof this.updateValues === 'function') {
+          if (typeof this.updateValues === 'function' || typeof this.__proto__.updateValues === 'function') {
             return this.updateValues();
           }
         } catch (_error) {
