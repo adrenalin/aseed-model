@@ -127,7 +127,6 @@ define [], () ->
         if typeof fields[k].serialize is 'function'
           fn = "get" + k.substr(0, 1).toUpperCase() + k.substr(1) + "Value"
           @[fn] = fields[k].serialize
-          console.log k, fn, @[fn]
       
       return fields
     
