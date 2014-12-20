@@ -118,7 +118,7 @@
       }
 
       Model.prototype.getFields = function() {
-        var Angular, defaults, fields, k, v;
+        var Angular, defaults, fields, fn, k, v;
         Angular = window.angular;
         if (typeof this._fields === 'undefined' || !Angular.isObject(this._fields)) {
           fields = {};
@@ -131,7 +131,8 @@
           "default": null,
           formData: true,
           required: false,
-          validation: null
+          validation: null,
+          serialize: null
         };
         for (k in fields) {
           v = fields[k];
@@ -140,6 +141,11 @@
             fields[k].type = v;
           } else {
             fields[k] = Angular.extend({}, defaults, v);
+          }
+          if (typeof fields[k].serialize === 'function') {
+            fn = "get" + k.substr(0, 1).toUpperCase() + k.substr(1) + "Value";
+            this[fn] = fields[k].serialize;
+            console.log(k, fn, this[fn]);
           }
         }
         return fields;

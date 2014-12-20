@@ -115,6 +115,7 @@ define [], () ->
         formData: true
         required: false
         validation: null
+        serialize: null
       
       for k, v of fields
         if !Angular.isObject(v)
@@ -122,6 +123,11 @@ define [], () ->
           fields[k].type = v
         else
           fields[k] = Angular.extend({}, defaults, v)
+        
+        if typeof fields[k].serialize is 'function'
+          fn = "get" + k.substr(0, 1).toUpperCase() + k.substr(1) + "Value"
+          @[fn] = fields[k].serialize
+          console.log k, fn, @[fn]
       
       return fields
     
