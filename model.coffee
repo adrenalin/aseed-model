@@ -126,7 +126,7 @@ define [], () ->
         
         if typeof fields[k].serialize is 'function'
           fn = "get" + k.substr(0, 1).toUpperCase() + k.substr(1) + "Value"
-          @[fn] = fields[k].serialize
+          @__proto__[fn] = fields[k].serialize
       
       return fields
     

@@ -144,7 +144,7 @@
           }
           if (typeof fields[k].serialize === 'function') {
             fn = "get" + k.substr(0, 1).toUpperCase() + k.substr(1) + "Value";
-            this[fn] = fields[k].serialize;
+            this.__proto__[fn] = fields[k].serialize;
           }
         }
         return fields;
