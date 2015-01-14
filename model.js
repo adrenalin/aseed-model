@@ -189,8 +189,131 @@
         return value;
       };
 
+      Model.prototype.clone = function(recursive) {
+        if (recursive == null) {
+          recursive = false;
+        }
+        return this.__proto__.cloneModel(recursive);
+      };
+
+      Model.prototype.cloneModel = function(recursive) {
+        var clone, data, k, v, _ref;
+        data = {};
+        _ref = this._fields;
+        for (k in _ref) {
+          v = _ref[k];
+          if (k === 'id') {
+            continue;
+          }
+          if (typeof v.clone === 'function') {
+            data[k] = v.clone();
+          } else if (v.clone === 'false') {
+            data[k] = null;
+          } else {
+            data[k] = this.cloneNode(v, recursive);
+          }
+        }
+        clone = new this.constructor(data);
+        return clone;
+      };
+
+      Model.prototype.cloneNode = function(node, recursive) {
+        var i, rval, _i, _ref;
+        switch ((typeof node).toLowerCase()) {
+          case 'array':
+            rval = [];
+            for (i = _i = 0, _ref = node.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+              rval.push(this.cloneNode(node[i]));
+            }
+            break;
+          default:
+            return node;
+        }
+        return node;
+      };
+
+      Model.prototype.setValue = function(k, value) {
+        var camelCase, capitalized, className, i, key, obj, setter, t0, t1, type, v, val, _i, _ref, _results;
+        if (typeof this._fields[k] !== 'undefined') {
+          v = this._fields[k];
+        } else {
+          v = {};
+        }
+        if (typeof v.type !== 'undefined') {
+          type = v.type;
+        } else {
+          type = v;
+        }
+        key = type.toString().split(':');
+        t0 = key[0];
+        if (typeof this._namespace[t0] !== 'undefined') {
+          key = ['Object', t0];
+        }
+        if (typeof key[1] === 'undefined') {
+          t1 = '';
+        } else {
+          t1 = key[1];
+        }
+        if (t0 === 'Array' && typeof this._namespace[t1] !== 'undefined') {
+          key = ['Array', 'Object', t1];
+        }
+        capitalized = k.toString().substring(0, 1).toUpperCase() + k.toString().substring(1);
+        setter = "set" + k;
+        camelCase = 'set' + capitalized;
+        if ((typeof this[camelCase] === 'function' || typeof this.__proto__[camelCase] === 'function') && camelCase !== 'setValues') {
+          this[camelCase](value);
+          return;
+        } else if (typeof this[setter] === 'function' || typeof this.__proto__[setter] === 'function') {
+          this[setter](value);
+          return;
+        }
+        switch (key[0]) {
+          case 'Array':
+            this[k] = [];
+            if (key[1] === 'Object') {
+              if (typeof key[2] !== 'undefined') {
+                className = key[2];
+              } else {
+                className = null;
+              }
+              _results = [];
+              for (i = _i = 0, _ref = value.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+                val = value[i];
+                if (!className) {
+                  obj = val;
+                } else if (typeof window[className] !== 'undefined') {
+                  obj = new window[className];
+                } else if (typeof this._namespace[className] !== 'undefined') {
+                  obj = new this._namespace[className](val);
+                }
+                _results.push(this[k].push(obj));
+              }
+              return _results;
+            } else {
+              return this[k] = this.typecast(value, key[1]);
+            }
+            break;
+          case 'Object':
+            if (typeof key[1] !== 'undefined') {
+              className = key[1];
+            } else {
+              className = null;
+            }
+            if (!className) {
+              obj = value;
+            } else if (typeof window[className] !== 'undefined') {
+              obj = new window[className];
+            } else if (typeof this._namespace[className] !== 'undefined') {
+              obj = new this._namespace[className](value);
+            }
+            return this[k] = obj;
+          default:
+            return this[k] = this.typecast(value, key[0]);
+        }
+      };
+
       Model.prototype.setValues = function(values) {
-        var camelCase, capitalized, className, def, error, i, k, key, obj, setter, t0, t1, type, v, value, _i, _ref, _ref1;
+        var error, k, v, value, _ref;
         if (values == null) {
           values = null;
         }
@@ -198,92 +321,14 @@
           _ref = this._fields;
           for (k in _ref) {
             v = _ref[k];
-            if (v === null) {
-              v = '';
-            }
-            if (typeof v["default"] !== 'undefined') {
-              def = v["default"];
+            if (typeof values[k] !== 'undefined') {
+              value = values[k];
+            } else if (typeof v["default"] !== 'undefined') {
+              value = v["default"];
             } else {
-              def = null;
+              value = null;
             }
-            if (typeof v.type !== 'undefined') {
-              type = v.type;
-            } else {
-              type = v;
-            }
-            key = type.toString().split(':');
-            if (typeof values[k] === 'undefined') {
-              if (key[0] === 'Array') {
-                values[k] = [];
-              } else {
-                values[k] = def;
-              }
-            }
-            t0 = key[0];
-            if (typeof this._namespace[t0] !== 'undefined') {
-              key = ['Object', t0];
-            }
-            if (typeof key[1] === 'undefined') {
-              t1 = '';
-            } else {
-              t1 = key[1];
-            }
-            if (t0 === 'Array' && typeof this._namespace[t1] !== 'undefined') {
-              key = ['Array', 'Object', t1];
-            }
-            capitalized = k.toString().substring(0, 1).toUpperCase() + k.toString().substring(1);
-            setter = "set" + k;
-            camelCase = 'set' + capitalized;
-            if ((typeof this[camelCase] === 'function' || typeof this.__proto__[camelCase] === 'function') && camelCase !== 'setValues') {
-              this[camelCase](values[k]);
-              continue;
-            } else if (typeof this[setter] === 'function' || typeof this.__proto__[setter] === 'function') {
-              this[setter](values[k]);
-              continue;
-            }
-            switch (key[0]) {
-              case 'Array':
-                this[k] = [];
-                if (key[1] === 'Object') {
-                  if (typeof key[2] !== 'undefined') {
-                    className = key[2];
-                  } else {
-                    className = null;
-                  }
-                  for (i = _i = 0, _ref1 = values[k].length; 0 <= _ref1 ? _i < _ref1 : _i > _ref1; i = 0 <= _ref1 ? ++_i : --_i) {
-                    value = values[k][i];
-                    if (!className) {
-                      obj = value;
-                    } else if (typeof window[className] !== 'undefined') {
-                      obj = new window[className];
-                    } else if (typeof this._namespace[className] !== 'undefined') {
-                      obj = new this._namespace[className](value);
-                    }
-                    this[k].push(obj);
-                  }
-                } else {
-                  this[k] = this.typecast(values[k], key[1]);
-                }
-                break;
-              case 'Object':
-                if (typeof key[1] !== 'undefined') {
-                  className = key[1];
-                } else {
-                  className = null;
-                }
-                value = values[k];
-                if (!className) {
-                  obj = value;
-                } else if (typeof window[className] !== 'undefined') {
-                  obj = new window[className];
-                } else if (typeof this._namespace[className] !== 'undefined') {
-                  obj = new this._namespace[className](value);
-                }
-                this[k] = obj;
-                break;
-              default:
-                this[k] = this.typecast(values[k], key[0]);
-            }
+            this.setValue(k, value);
           }
           if (typeof this.updateValues === 'function' || typeof this.__proto__.updateValues === 'function') {
             return this.updateValues();
